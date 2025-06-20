@@ -158,6 +158,19 @@ services:
     networks:
       - cep-web
 
+  app:
+    image: cep/cep-core
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    restart: always
+    depends_on:
+      - broker
+    networks:
+      - cep-web
+
 volumes:
   grafana_data:
 
