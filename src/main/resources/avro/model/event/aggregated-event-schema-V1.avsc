@@ -1,0 +1,56 @@
+{
+  "namespace": "com.pgu.cepcore.model.event",
+  "name": "AggregatedEventAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор агрегированного события"
+    },
+    {
+      "name": "heterogeneousCompatibilityId",
+      "type": "int",
+      "doc": "Гетерогенный идентификатор совместности события"
+    },
+    {
+      "name": "startTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время начала агрегированного события(время первого атомарного события) в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "endTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время конца агрегированного события(время последнего элементарного события) в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "aggregatedEventMetadataAvro",
+      "type": "com.pgu.cepcore.model.metadata.AggregatedEventMetadataAvro",
+      "doc": "Полезная нагрузка агрегированного события"
+    },
+    {
+      "name": "atomicEventIds",
+      "type": {
+        "type": "array",
+        "items": {
+          "type": "string",
+          "logicalType": "uuid"
+        },
+        "name": "atomicEventId"
+      },
+      "default": [],
+      "doc": "Коллекция идентификаторов агрегированных атомарных событий"
+    }
+  ],
+  "doc": "Avro модель агрегированного события",
+  "version": "1"
+}

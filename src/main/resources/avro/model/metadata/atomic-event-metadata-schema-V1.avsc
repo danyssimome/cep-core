@@ -1,0 +1,24 @@
+//TODO: сделать трассировку/логирование данных через другие технологии
+{
+  "namespace": "com.pgu.cepcore.model.metadata",
+  "name": "AtomicEventMetadataAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор метаданных атомарного события"
+    },
+    {
+      "name": "information",
+      "type": "string",
+      "default": "",
+      "doc": "Данные обогащения атомарного события"
+    }
+  ],
+  "doc": "Мета-структура обогащения данных атомарного события",
+  "version": "1"
+}

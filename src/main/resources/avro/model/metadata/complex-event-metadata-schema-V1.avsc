@@ -1,0 +1,24 @@
+//TODO: сделать трассировку/логирование данных через другие технологии
+{
+  "namespace": "com.pgu.cepcore.model.metadata",
+  "name": "ComplexEventMetadataAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор метаданных комплексного события"
+    },
+    {
+      "name": "information",
+      "type": "string",
+      "default": "",
+      "doc": "Данные обогащения комплексного события"
+    }
+  ],
+  "doc": "Мета-структура обогащения данных комплексного события",
+  "version": "1"
+}

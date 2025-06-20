@@ -1,0 +1,48 @@
+//TODO: стоит перейти на схемы avro.avdl
+{
+  "namespace": "com.pgu.cepcore.model.event",
+  "name": "AtomicEventAvro",
+  "type": "record",
+  "fields": [
+    {
+      //TODO: поддержка UUID?
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор атомарного события"
+    },
+    {
+      "name": "homogeneousCompatibilityId",
+      "type": "int",
+      "doc": "Гомогенный идентификатор совместности события"
+    },
+    {
+      "name": "heterogeneousCompatibilityId",
+      "type": "int",
+      "doc": "Гетерогенный идентификатор совместности события"
+    },
+    {
+      "name": "startTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время начала события в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "default": "",
+      "doc": "Описание атомарного события"
+    },
+    {
+      "name": "atomicEventMetadataAvro",
+      "type": "com.pgu.cepcore.model.metadata.AtomicEventMetadataAvro",
+      "doc": "Полезная нагрузка атомарного события"
+    }
+  ],
+  "doc": "Avro модель атомарного события",
+  "version": "1"
+}

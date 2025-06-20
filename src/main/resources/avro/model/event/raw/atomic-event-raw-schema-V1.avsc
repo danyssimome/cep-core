@@ -1,0 +1,49 @@
+{
+  "namespace": "com.pgu.cepcore.model.event.raw",
+  "name": "AtomicEventRawAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор атомарного события"
+    },
+    {
+      "name": "homogeneousCompatibilityId",
+      "type": "int",
+      "doc": "Гомогенный идентификатор совместности события"
+    },
+    {
+      "name": "heterogeneousCompatibilityId",
+      "type": "int",
+      "doc": "Гетерогенный идентификатор совместности события"
+    },
+    {
+      "name": "startTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время начала события в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "description",
+      "type": "string",
+      "default": "",
+      "doc": "Описание атомарного события"
+    },
+    {
+      "name": "atomicEventMetadataId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор полезной нагрузки атомарного события"
+    }
+  ],
+  "doc": "Avro модель сырого атомарного события",
+  "version": "1"
+}

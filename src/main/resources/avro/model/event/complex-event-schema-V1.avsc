@@ -1,0 +1,54 @@
+{
+  "namespace": "com.pgu.cepcore.model.event",
+  "name": "ComplexEventAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор комплексного события"
+    },
+    {
+      "name": "startTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время начала комплексного события(время первого атомарного события) в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "endTime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "doc": "Время конца комплексного события(время последнего атомарного события) в ISO 8601:2004 с указанием TZ"
+    },
+    {
+      "name": "complexEventMetadataAvro",
+      "type": "com.pgu.cepcore.model.metadata.ComplexEventMetadataAvro",
+      "doc": "Полезная нагрузка комплексного события"
+    },
+    {
+      "name": "atomicEventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор атомарного события"
+    },
+    {
+      "name": "aggregatedEventId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор агрегированного события"
+    }
+  ],
+  "doc": "Avro модель комплексного события",
+  "version": "1"
+}

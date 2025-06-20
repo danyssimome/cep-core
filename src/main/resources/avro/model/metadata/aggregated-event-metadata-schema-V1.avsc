@@ -1,0 +1,23 @@
+{
+  "namespace": "com.pgu.cepcore.model.metadata",
+  "name": "AggregatedEventMetadataAvro",
+  "type": "record",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      },
+      "doc": "Идентификатор метаданных агрегированного события"
+    },
+    {
+      "name": "information",
+      "type": "string",
+      "default": "",
+      "doc": "Данные обогащения агрегированного события"
+    }
+  ],
+  "doc": "Мета-структура обогащения данных агрегированного события",
+  "version": "1"
+}
