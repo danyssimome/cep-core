@@ -38,5 +38,5 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t cep/cep-core:latest -f deployment .
+          docker build -t cep/cep-core:latest -f deployment/Dockerfile deployment
           docker push cep/cep-core:latest
