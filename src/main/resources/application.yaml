@@ -1,0 +1,77 @@
+server:
+  port: ${APP_PORT:8080}
+
+spring:
+  application:
+    name: "sep-core"
+
+  kafka:
+    bootstrap-servers: "localhost:9092"
+
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.UUIDSerializer #(?)
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer #(?)
+      properties:
+        # Настройка надежности
+        ## Отказоустойчивость/доступность
+        ### Настройки лимитов отправляемых данных
+        batch-size: 204800 #(?)
+        max-request-size: 204800 #(?)
+        ### Настройка лимитов буфера ожидания
+        buffer-memory: 33554432
+        ### Настройки тайм-аутов блокировки буфера ожидания
+        max-block-ms: 60000
+        ### Настройки тайм-аутов доставки
+        linger-ms: 20 #(?)
+        request-timeout-ms: 30000
+        retry-backoff-ms: 100
+        delivery-timeout-ms: 120000
+        ### Настройка повторных попыток
+        retries: 2147483647
+        ### Настройки гарантий доставки
+        acks: "all" #(?)
+
+        ## Консистентность доставки
+        enable-idempotence: true #(?)
+
+        # Настройка масштабируемости
+        max-in-flight-requests-per-connection: 1 #(?)
+
+    schema:
+      schema-registry-url: "http://localhost:8081/"
+      key-subject-name-strategy: io.confluent.kafka.serializers.subject.TopicNameStrategy
+      value-subject-name-strategy: io.confluent.kafka.serializers.subject.TopicNameStrategy
+      auto-register-schemas: true
+      use-latest-version: false
+      avro-deserializer-config:
+        specific-avro-reader: true
+
+    topics:
+      atomic-raw: "atomic-event-raw-topic"
+      aggregated-raw: "aggregated-event-raw-topic"
+      complex-raw: "complex-event-raw-topic"
+
+      atomic: "atomic-event-topic"
+      aggregated: "aggregated-event-topic"
+      complex: "complex-event-topic"
+
+      atomic-metadata: "atomic-event-metadata-topic"
+      aggregated-metadata: "aggregated-event-metadata-topic"
+      complex-metadata: "complex-event-metadata-topic"
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+logging:
+  file:
+    path: "log"
+  level:
+    ROOT: info
+    org.springframework.security: trace
+    org.hibernate: info
+  logback:
+    rollingpolicy:
+      clean-history-on-start: true
