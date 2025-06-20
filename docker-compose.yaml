@@ -160,6 +160,7 @@ services:
 
   app:
     container_name: cep-core
+    image: alexkos58/cep-core:latest
     build:
       context: ./
       dockerfile: Dockerfile
