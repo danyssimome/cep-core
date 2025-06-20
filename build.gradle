@@ -1,0 +1,57 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '3.5.0'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'com.github.davidmc24.gradle.plugin.avro' version '1.2.0'
+}
+
+group = 'pgu.cep'
+version = '0.0.1-SNAPSHOT'
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url 'https://packages.confluent.io/maven/' }
+}
+
+ext {
+    lombokVersion = '1.18.28'
+    avroVersion = '1.10.2'
+    kafkaAvroSerializerVersion = '7.4.0'
+    kafkaStreamsAvroSerdeVersion = '6.0.1'
+}
+
+dependencies {
+    /**web**/
+
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+
+    /**common**/
+    //lombok
+    implementation "org.projectlombok:lombok:${lombokVersion}"
+    annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
+    //avro
+    implementation "org.apache.avro:avro:${avroVersion}"
+    implementation "io.confluent:kafka-avro-serializer:${kafkaAvroSerializerVersion}"
+    implementation "io.confluent:kafka-streams-avro-serde:${kafkaStreamsAvroSerdeVersion}"
+
+    /**testing*/
+    implementation 'org.springframework.kafka:spring-kafka'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.kafka:spring-kafka-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+generateAvroJava {
+    source("${projectDir}/src/main/resources/avro")
+    outputDir = file("${projectDir}/build/generated/sources/avro")
+}
