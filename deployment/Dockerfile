@@ -1,4 +1,5 @@
 FROM openjdk:17-alpine
 WORKDIR /app
-COPY build/libs/*.jar app.jar
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ARG JAR_FILE=target/*.jar
+COPY ${JAR_FILE} cep-core.jar
+ENTRYPOINT ["java", "-jar", "cep-core.jar"]
