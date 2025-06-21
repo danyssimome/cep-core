@@ -1,4 +1,5 @@
 #проверка, сборка, пуш в Docker Hub
+
 name: CI Pipeline
 
 on:
