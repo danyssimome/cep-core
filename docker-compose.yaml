@@ -2,6 +2,7 @@ version: "3.9"
 name: cep
 
 services:
+
   ######### BROKER #########
 
   broker:
@@ -26,16 +27,12 @@ services:
       KAFKA_DEFAULT_REPLICATION_FACTOR: 1 #(?)
       KAFKA_MIN_INSYNC_REPLICAS: 1 #(?)
       KAFKA_AUTO_LEADER_REBALANCE_ENABLE: true
-      KAFKA_LEADER_IMBALANCE_PER_BROKER_PERCENTAGE: 10
-      KAFKA_LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS: 300
-
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-
       KAFKA_UNCLEAN_LEADER_ELECTION_ENABLE: false
 
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: true
       KAFKA_DELETE_TOPIC_ENABLE: true
       KAFKA_NUM_PARTITIONS: 1 #(?)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
 
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1 #?
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1 #?
@@ -43,18 +40,12 @@ services:
       KAFKA_LOG_CLEANER_ENABLE: true
       KAFKA_LOG_CLEANUP_POLICY: "compact" #(?)
 
-      KAFKA_METRIC_REPORTERS: ''
-      KAFKA_METRICS_POLLING_INTERVAL_SECS: 10
-      ## JMX
-      # KAFKA_JMX_PORT: 9101 #(?)
-      # KAFKA_JMX_HOSTNAME: "broker"
-
       EXTRA_ARGS:
         "-javaagent:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.0.1.jar=9101:/etc/jmx/jmx.yaml"
 
     volumes:
-      #- ./brokers/broker/log:/var/lib/kafka/log
-      #- ./brokers/broker/data:/var/lib/kafka/data
+      - ./brokers/broker/log:/var/lib/kafka/log
+      - ./brokers/broker/data:/var/lib/kafka/data
       - ./config/jmx/agents/jmx_prometheus_javaagent-1.0.1.jar:/usr/share/jmx_exporter/jmx_prometheus_javaagent-1.0.1.jar
       - ./config/jmx/jmx.yaml:/etc/jmx/jmx.yaml
     networks:
@@ -62,8 +53,8 @@ services:
 
   schema-registry:
     image: confluentinc/cp-schema-registry:latest
-    container_name: schema-registry
-    hostname: schema-registry
+    container_name: "schema-registry"
+    hostname: "schema-registry"
     ports:
       - "8081:8081"
     environment:
@@ -98,16 +89,14 @@ services:
 
   ksqldb-server:
     image: confluentinc/cp-ksqldb-server:7.8.0
-    hostname: ksqldb-server
-    container_name: ksqldb-server
+    hostname: "ksqldb-server"
+    container_name: "ksqldb-server"
     ports:
       - "8088:8088"
     environment:
       KSQL_CONFIG_DIR: "/etc/ksql"
       KSQL_BOOTSTRAP_SERVERS: "broker:29092"
-      KSQL_HOST_NAME: ksqldb-server
       KSQL_LISTENERS: "http://0.0.0.0:8088"
-      KSQL_CACHE_MAX_BYTES_BUFFERING: 0
       KSQL_KSQL_SCHEMA_REGISTRY_URL: "http://schema-registry:8081"
       KSQL_PRODUCER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringProducerInterceptor"
       KSQL_CONSUMER_INTERCEPTOR_CLASSES: "io.confluent.monitoring.clients.interceptor.MonitoringConsumerInterceptor"
@@ -122,7 +111,7 @@ services:
 
   ksqldb-cli:
     image: confluentinc/cp-ksqldb-cli:7.8.0
-    container_name: ksqldb-cli
+    container_name: "ksqldb-cli"
     entrypoint: /bin/sh
     tty: true
     depends_on:
@@ -134,10 +123,12 @@ services:
 
   prometheus:
     image: prom/prometheus:latest
+    container_name: "prometheus"
+    hostname: "prometheus"
     ports:
       - "9090:9090"
     volumes:
-      - ./config/prometheus.yaml:/etc/prometheus/prometheus.yml
+      - ./config/prometheus/prometheus.yaml:/etc/prometheus/prometheus.yml
     depends_on:
       - broker
     networks:
@@ -145,6 +136,8 @@ services:
 
   grafana:
     image: grafana/grafana:latest
+    container_name: "grafana"
+    hostname: "grafana"
     ports:
       - "3000:3000"
     environment:
@@ -153,24 +146,61 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     depends_on:
-      - broker
       - prometheus
     networks:
       - cep-web
 
-  app:
-    container_name: cep-core
-    image: alexkos58/cep-core:latest
-    build:
-      context: ./
-      dockerfile: Dockerfile
+  ######### LOGS #########
+
+  elasticsearch:
+    image: elasticsearch:7.16.1
+    container_name: "elasticsearch"
+    hostname: "elasticsearch"
     ports:
-      - "8080:8080"
-    restart: always
-    depends_on:
-      - broker
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx512m -Xms512m"
+      ELASTIC_USERNAME: "elastic"
+      ELASTIC_PASSWORD: "elastic"
+      discovery.type: single-node
+    volumes:
+      - ./config/elasticsearch/config.yml:/usr/share/elasticsearch/config/elasticsearch.yml:ro
+      - ./docker_volumes/elasticsearch/data:/usr/share/elasticsearch/data
     networks:
       - cep-web
+
+  logstash:
+    image: logstash:7.16.2
+    container_name: "logstash"
+    hostname: "logstash"
+    ports:
+      - "5046:5046"
+    environment:
+      LS_JAVA_OPTS: "-Xmx512m -Xms512m"
+    volumes:
+      - ./config/logstash/pipelines.yml:/usr/share/logstash/config/pipelines.yml:ro
+      - ./config/logstash/pipelines:/usr/share/logstash/config/pipelines:ro
+      - ./log:/usr/share/logstash/input
+    depends_on:
+      - elasticsearch
+    networks:
+      - cep-web
+
+  kibana:
+    image: kibana:7.16.1
+    container_name: "kibana"
+    hostname: "kibana"
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./config/kibana/config.yml:/usr/share/kibana/config/kibana.yml:ro
+    depends_on:
+      - elasticsearch
+    networks:
+      - cep-web
+
+  ######### APP #########
 
 volumes:
   grafana_data:
