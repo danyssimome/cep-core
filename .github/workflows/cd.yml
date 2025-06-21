@@ -18,22 +18,17 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Build and push image
-        run: |
-          docker build -t alexkos58/cep-core:latest .
-          docker push alexkos58/cep-core:latest
-
       - name: Get image tag
         id: get_tag
         run: echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Pull image
+        run: docker pull alexkos58/cep-core:${{ steps.get_tag.outputs.tag }}
 
       - name: Print image info
         run: |
           echo "Деплой версии: ${{ steps.get_tag.outputs.tag }}"
           echo "Образ: alexkos58/cep-core:${{ steps.get_tag.outputs.tag }}"
-
-      - name: Pull image
-        run: docker pull alexkos58/cep-core:${{ steps.get_tag.outputs.tag }}
 
       - name: Done
         run: echo "Проект запущен и обновлён успешно"
