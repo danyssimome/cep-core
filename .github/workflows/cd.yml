@@ -2,6 +2,10 @@
 name: CD Pipeline
 
 on:
+  workflow_run:
+    workflows: [ "CI Pipeline" ]
+    types:
+      - completed
   push:
     tags:
       - 'v*'
